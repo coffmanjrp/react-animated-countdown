@@ -4,26 +4,27 @@ import './App.scss';
 function App() {
   const [isHide, setIsHide] = useState(false);
   const [isFinal, setIsFinal] = useState(false);
-  const countdown = [3, 2, 1, 0];
+  const nums = [3, 2, 1, 0];
   const refs = useRef([createRef(), createRef(), createRef(), createRef()]);
-  const nums = refs.current;
+  const countdown = refs.current;
 
   useEffect(() => {
     runAnimation();
+
     // eslint-disable-next-line
   }, []);
 
   const runAnimation = () => {
-    nums[0].current.className = 'in';
+    countdown[0].current.className = 'in';
 
-    nums.forEach((num, index) => {
-      const nextToLast = nums.length - 1;
+    countdown.forEach((count, index) => {
+      const nextToLast = countdown.length - 1;
 
-      num.current.addEventListener('animationend', (e) => {
+      count.current.addEventListener('animationend', (e) => {
         if (e.animationName === 'goIn' && index !== nextToLast) {
-          num.current.className = 'out';
-        } else if (e.animationName === 'goOut' && num.current.nextSibling) {
-          num.current.nextSibling.className = 'in';
+          count.current.className = 'out';
+        } else if (e.animationName === 'goOut' && count.current.nextSibling) {
+          count.current.nextSibling.className = 'in';
         } else {
           setIsHide(true);
           setIsFinal(true);
@@ -32,14 +33,30 @@ function App() {
     });
   };
 
+  const resetAnimation = () => {
+    setIsFinal(false);
+    setIsHide(false);
+
+    countdown.forEach((count) => {
+      count.current.className = '';
+    });
+
+    countdown[0].current.className = 'in';
+  };
+
+  const handleClick = () => {
+    resetAnimation();
+    runAnimation();
+  };
+
   return (
     <>
       <div className={`counter${isHide ? ' hide' : ''}`}>
-        <div className="nums">
-          {countdown.length > 0 &&
-            countdown.map((count, index) => (
-              <span key={count} ref={refs.current[index]}>
-                {count}
+        <div className="countdown">
+          {nums.length > 0 &&
+            nums.map((num, index) => (
+              <span key={num} ref={refs.current[index]}>
+                {num}
               </span>
             ))}
         </div>
@@ -47,7 +64,9 @@ function App() {
       </div>
       <div className={`final${isFinal ? ' show' : ''}`}>
         <h1>GO</h1>
-        <button className="btn">Replay</button>
+        <button className="btn" onClick={handleClick}>
+          Replay
+        </button>
       </div>
     </>
   );
